@@ -1,0 +1,12 @@
+{
+  "name": "foodhub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Foodhub — Food delivery web app",
+  "scripts": {
+    "start": "npx serve . --listen 3000"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

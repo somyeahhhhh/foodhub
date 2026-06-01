@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Foodhub — Order food delivery from the best restaurants in your city"/>
+  <title>Foodhub – Food Delivery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/src/styles.css"/>
+</head>
+<body>
+
+  <div class="promo-bar" id="topPromoBar">
+    <span class="tag">🔥 TODAY ONLY</span>
+    Free delivery on your first 3 orders — no minimum cart value!
+    <button class="promo-bar-close" aria-label="Close promotion bar" onclick="document.getElementById('topPromoBar').style.display='none'">×</button>
+  </div>
+
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container">
+      <a href="/" class="nav-logo" aria-label="Foodhub home">
+        <span class="nav-logo-icon" aria-hidden="true">🍔</span>
+        Foodhub
+      </a>
+      <div class="nav-location-wrap">
+        <button class="nav-location" id="locationBtn" aria-haspopup="listbox" aria-expanded="false" title="Select your city">
+          <span class="loc-dot" aria-hidden="true"></span>
+          <span class="loc-text" id="locationText">Select city</span>
+          <span class="loc-arrow" aria-hidden="true">▼</span>
+        </button>
+        <button class="geo-btn" id="geoBtn" aria-label="Detect my location">📍 Use my location</button>
+        <div class="location-dropdown" id="locationDropdown" role="listbox" aria-label="Select a city">
+          <div class="loc-search-wrap">
+            <span aria-hidden="true" style="font-size:16px;">🔍</span>
+            <input type="text" id="locSearchInput" placeholder="Search cities…" autocomplete="off" aria-label="Search cities"/>
+          </div>
+          <div class="loc-cities-list" id="citiesList"></div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#" class="nav-link active">Delivery</a>
+        <a href="#dinein" class="nav-link nav-link-dine">🍽️ Dine-In</a>
+      </div>
+      <button class="dark-toggle" id="darkToggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+      <div class="nav-auth">
+        <button class="btn-login" id="openLoginBtn">Log in</button>
+        <button class="btn-signup" id="openSignupBtn">Sign up</button>
+        <button class="nav-cart-btn" id="cartBtn" aria-label="Open cart" aria-haspopup="dialog">
+          🛒 Cart
+          <span class="nav-cart-count" id="cartCount" aria-live="polite">0</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="modal-overlay" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle" aria-hidden="true">
+    <div class="modal-box">
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      <div class="modal-logo" aria-hidden="true">🍔</div>
+      <h2 class="modal-title" id="authTitle">Welcome back</h2>
+      <p class="modal-sub" id="authSub">Don't have an account? <a id="authToggleLink" href="#" role="button">Sign up</a></p>
+      <div class="modal-divider" aria-hidden="true">OR</div>
+      <div id="emailForm">
+        <div class="modal-input-group">
+          <label for="authEmail">Email address</label>
+          <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email"/>
+        </div>
+        <div class="modal-input-group">
+          <label for="authPassword">Password</label>
+          <input type="password" id="authPassword" placeholder="••••••••" autocomplete="current-password"/>
+        </div>
+        <p class="modal-forgot" id="forgotLink" tabindex="0">Forgot your password?</p>
+        <button class="btn-auth-submit" id="authSubmitBtn">Log in</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-label="Your cart" aria-hidden="true">
+    <div class="cart-header">
+      <h3 class="cart-title">🛒 Your Cart</h3>
+      <button class="cart-close-btn" id="cartCloseBtn" aria-label="Close cart">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer" id="cartFooter" style="display:none;">
+      <div class="cart-subtotal"><span>Subtotal</span><span id="cartSubtotal">₹0</span></div>
+      <div class="cart-taxes"><span>Taxes & fees (5% GST)</span><span id="cartTaxes">₹0</span></div>
+      <div class="cart-total-row"><span>Total</span><span id="cartTotal">₹0</span></div>
+      <button class="btn-checkout" id="checkoutBtn">Proceed to Checkout →</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="reserveModal" role="dialog" aria-modal="true" aria-labelledby="reserveHeading" aria-hidden="true">
+    <div class="modal-box">
+      <button class="modal-close" id="reserveClose" aria-label="Close reservation">✕</button>
+      <div class="modal-logo" aria-hidden="true">🍽️</div>
+      <h2 class="modal-title" id="reserveHeading">Reserve a Table</h2>
+      <p class="modal-sub" id="reserveRestName">at The Grand Spice</p>
+      <div class="reserve-fields">
+        <div class="reserve-field"><label for="reserveDate">Date</label><input type="date" id="reserveDate"/></div>
+        <div class="reserve-field"><label for="reserveTime">Time</label>
+          <select id="reserveTime"><option>12:00 PM</option><option>12:30 PM</option><option>1:00 PM</option><option>7:00 PM</option><option>7:30 PM</option><option>8:00 PM</option></select>
+        </div>
+        <div class="reserve-field"><label for="reserveGuests">Guests</label>
+          <select id="reserveGuests"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6+</option></select>
+        </div>
+        <div class="reserve-field"><label for="reserveName">Your name</label><input type="text" id="reserveName" placeholder="Full name"/></div>
+      </div>
+      <div class="modal-input-group"><label for="reservePhone">Phone number</label><input type="tel" id="reservePhone" placeholder="+91 98765 43210"/></div>
+      <div class="modal-input-group"><label for="reserveNote">Special requests (optional)</label><input type="text" id="reserveNote" placeholder="e.g. window seat, anniversary setup…"/></div>
+      <button class="btn-auth-submit" id="reserveConfirm">Confirm Reservation</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="menuModal" role="dialog" aria-modal="true" aria-label="Restaurant menu" aria-hidden="true">
+    <div class="modal-box modal-box--wide">
+      <button class="modal-close" id="menuClose" aria-label="Close menu">✕</button>
+      <div class="menu-modal-header" id="menuModalHeader"></div>
+      <div class="menu-grid" id="menuGrid" role="list"></div>
+    </div>
+  </div>
+
+  <main>
+
+    <section class="hero">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <span class="hero-eyebrow">📍 Delivering near you</span>
+            <h1 class="hero-title">Hungry? <span>Order</span><br/>in minutes.</h1>
+            <p class="hero-desc">From local favourites to premium dine-in experiences — Foodhub delivers fresh, fast, and right to your door.</p>
+            <div class="api-loading-bar" id="apiLoadingBar" role="status" aria-live="polite">
+              <div class="api-spinner" aria-hidden="true"></div>
+              <span id="apiLoadingText">Fetching restaurants near you…</span>
+            </div>
+            <div class="api-error-bar" id="apiErrorBar" role="alert">
+              <span aria-hidden="true">⚠️</span>
+              <span id="apiErrorText">Could not load restaurants. Showing sample data.</span>
+            </div>
+            <div class="hero-search-wrap">
+              <div class="hero-search" role="search">
+                <span aria-hidden="true" style="font-size:18px; flex-shrink:0;">🔍</span>
+                <input type="text" id="heroSearch" placeholder="Search restaurants, cuisines, dishes…" autocomplete="off" aria-label="Search restaurants" aria-autocomplete="list" aria-controls="searchSuggestions"/>
+                <button class="hero-search-btn" id="searchBtn" aria-label="Search">Search</button>
+              </div>
+              <div class="search-suggestions" id="searchSuggestions" role="listbox" aria-label="Search suggestions" aria-expanded="false"></div>
+            </div>
+            <div class="hero-stats" aria-label="Foodhub statistics">
+              <div class="hero-stat">
+                <div class="hero-stat-num" id="statRestaurants">500+</div>
+                <div class="hero-stat-label">Restaurants</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">30 min</div>
+                <div class="hero-stat-label">Avg. Delivery</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">4.8 ⭐</div>
+                <div class="hero-stat-label">Avg. Rating</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-hidden="true">
+            <div class="hero-img-placeholder" id="heroImgPlaceholder">
+              <span id="heroEmoji">🍕</span>
+              <div class="hero-float-card card-rating" id="heroRatingCard">
+                <span class="float-rating-star">★</span>
+                <div>
+                  <div style="font-weight:700; font-size:14px;" id="heroRatingNum">4.9 Rating</div>
+                  <div style="font-size:11px; color:var(--text-muted);" id="heroRatingLabel">Top rated near you</div>
+                </div>
+              </div>
+              <div class="hero-float-card card-delivery">
+                <div class="float-del-label">🏍️ ETA</div>
+                <div class="float-del-val" id="floatETA">~25 min</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="promo-section" aria-label="Current promotion">
+      <div class="container">
+        <div class="promo-banner">
+          <div>
+            <span class="promo-tag">✨ LIMITED TIME</span>
+            <h2 class="promo-title">Dine-In & Save <span>20%</span></h2>
+            <p class="promo-desc">Book a table at 100+ premium restaurants and enjoy a special welcome discount.</p>
+            <a href="#dinein" class="promo-cta">Reserve Now →</a>
+            <div class="promo-dots" aria-hidden="true">
+              <div class="promo-dot active"></div><div class="promo-dot"></div><div class="promo-dot"></div>
+            </div>
+          </div>
+          <div class="promo-emoji" aria-hidden="true">🥂</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section recently-viewed-section" id="recentlyViewedSection" style="display:none;" aria-label="Recently viewed restaurants">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">👀 Recently Viewed</h2>
+          <button class="section-link rv-clear-btn" id="rvClearBtn" aria-label="Clear recently viewed">Clear →</button>
+        </div>
+        <div class="rv-scroll" id="rvScroll" role="list" aria-label="Recently viewed restaurants"></div>
+      </div>
+    </section>
+
+    <section class="section fav-section" id="favSection" style="display:none;" aria-label="Your favourite restaurants">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">❤️ Your Favourites</h2>
+          <button class="section-link fav-clear-btn" id="favClearBtn">Clear all →</button>
+        </div>
+        <div class="fav-scroll" id="favScroll" role="list"></div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Food categories">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">What are you craving?</h2>
+          <a href="#" class="section-link">All categories →</a>
+        </div>
+        <div class="categories-scroll" id="categoriesScroll" role="toolbar" aria-label="Filter by food category"></div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top: 0;" aria-label="Featured restaurants">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Featured near you</h2>
+          <a href="#" class="section-link" id="restaurantPageLink">View all →</a>
+        </div>
+        <div class="filter-bar filter-sort-bar" id="filterSortBar" role="toolbar" aria-label="Filter and sort restaurants">
+          <button class="filter-btn active" data-filter="all" aria-pressed="true">🍽️ All</button>
+          <button class="filter-btn" data-sort="rating" aria-pressed="false">⭐ Top Rated</button>
+          <button class="filter-btn" data-sort="delivery" aria-pressed="false">⚡ Fastest</button>
+          <button class="filter-btn" data-filter="veg" aria-pressed="false">🥗 Veg only</button>
+          <button class="filter-btn" data-filter="offers" aria-pressed="false">🏷️ Offers</button>
+        </div>
+        <section aria-label="Restaurant listings">
+          <div class="restaurant-grid" id="restaurantGrid" role="list">
+            <div class="rest-card" aria-hidden="true"><div class="rest-img skeleton" style="height:170px;"></div><div class="rest-body"><div class="skeleton" style="height:18px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:40%;"></div></div></div>
+            <div class="rest-card" aria-hidden="true"><div class="rest-img skeleton" style="height:170px;"></div><div class="rest-body"><div class="skeleton" style="height:18px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:40%;"></div></div></div>
+            <div class="rest-card" aria-hidden="true"><div class="rest-img skeleton" style="height:170px;"></div><div class="rest-body"><div class="skeleton" style="height:18px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:40%;"></div></div></div>
+            <div class="rest-card" aria-hidden="true"><div class="rest-img skeleton" style="height:170px;"></div><div class="rest-body"><div class="skeleton" style="height:18px;width:60%;margin-bottom:8px;"></div><div class="skeleton" style="height:13px;width:40%;"></div></div></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="dinein-section" id="dinein" aria-label="Dine-in and reservations">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">🍽️ Dine-In & Reserve</h2>
+            <p style="font-size:14px; color:var(--text-muted); margin-top:4px;">Book a table at the best restaurants around you</p>
+          </div>
+          <a href="#" class="section-link">Explore all →</a>
+        </div>
+        <div class="dinein-grid" id="dineinGrid">
+          <div class="dinein-card" aria-hidden="true"><div class="dinein-img skeleton"></div><div class="dinein-body"><div class="skeleton" style="height:16px;width:55%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:40%;"></div></div></div>
+          <div class="dinein-card" aria-hidden="true"><div class="dinein-img skeleton"></div><div class="dinein-body"><div class="skeleton" style="height:16px;width:55%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:40%;"></div></div></div>
+          <div class="dinein-card" aria-hidden="true"><div class="dinein-img skeleton"></div><div class="dinein-body"><div class="skeleton" style="height:16px;width:55%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:40%;"></div></div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <span class="footer-logo-icon" aria-hidden="true">🍔</span>
+            Foodhub
+          </div>
+          <p class="footer-tagline">Delivering happiness, one meal at a time. Fresh food, fast delivery.</p>
+        </div>
+        <div class="footer-col">
+          <p class="footer-col-title">COMPANY</p>
+          <ul><li><a href="#">About us</a></li><li><a href="#">Careers</a></li><li><a href="#">Blog</a></li><li><a href="#">Press</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <p class="footer-col-title">HELP</p>
+          <ul><li><a href="#">FAQ</a></li><li><a href="#">Contact</a></li><li><a href="#">Privacy</a></li><li><a href="#">Terms</a></li></ul>
+        </div>
+        <div class="footer-col">
+          <p class="footer-col-title">FOR PARTNERS</p>
+          <ul><li><a href="#">Add restaurant</a></li><li><a href="#">Delivery partner</a></li><li><a href="#">Advertise</a></li></ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Foodhub. All rights reserved.</span>
+        <span>Made with ❤️ for foodies</span>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/src/js/main.js"></script>
+</body>
+</html>
